@@ -11,7 +11,12 @@ display: flex;
 flex-direction: row;
 flex:1;
 `
+const MainLeft = styled.div`
+display: flex;
+flex-direction: column;
+justify-content:stretch;
+`
 
 
 
-export { Container, Main }
+export { Container, Main, MainLeft }

@@ -1,7 +1,14 @@
 import React, { Component } from 'react';
 import button from 'react-dom';
-import ReactMapGL from 'react-map-gl';
-import { Container} from './styles';
+import ReactMapGL, { Marker, LinearInterpolator, FlyToInterpolator } from 'react-map-gl';
+import { Container } from './styles';
+import Municipio from '../../model/Municipio';
+import Main from '../../controller/main';
+import * as d3 from 'd3-ease';
+import { FaMapMarkerAlt } from "react-icons/fa";
+
+
+
 
 const token = 'pk.eyJ1IjoianVjZW1hciIsImEiOiJjazJnbTI4amIwMG5pM2NvaHM3ZHk3Y2x2In0.aeDv31Xsir3Gvwm0kcs7BA'
 
@@ -10,11 +17,12 @@ export default class Map extends Component {
     super(props)
     this.state = {
       viewport: {
-        latitude: -27.588867,
-        longitude: -48.6001589,
-        zoom: 15
-
-      }
+        latitude: 0,
+        longitude: 0,
+        zoom: 2
+      },
+      db: [],
+      count: 0
     }
   }
 
@@ -22,12 +30,26 @@ export default class Map extends Component {
     this.setState({ viewport });
   }
 
-  _goToNYC = () => {
-    const viewport = {...this.state.viewport, longitude: -74.1, latitude: 40.7};
-    this.setState({viewport});
-}
+  add() {
+    
+    const municipio = Main.addMunicipio()
+    this.setState({
+      viewport: {
+        latitude: municipio.geocode.latitude,
+        longitude: municipio.geocode.longitude,
+        zoom: 12,
+        transitionDuration: 5000,
+        transitionInterpolator: new FlyToInterpolator(),
+        transitionEasing: d3.easeCubic
+      },
+      db: [...this.state.db, municipio],
+      count:this.state.count+1
+    })
+  }
+
 
   render() {
+
     return (
       <Container>
         <ReactMapGL
@@ -37,9 +59,17 @@ export default class Map extends Component {
           mapStyle='mapbox://styles/mapbox/light-v9'
           {...this.state.viewport}
           onViewportChange={this._onViewportChange}
-        />
-        <button onClick={this._goToNYC}>New York City</button>
-      </Container>
+        >
+          {this.state.db && this.state.db.map((item) => (
+            <Marker latitude={item.geocode.latitude} longitude={item.geocode.longitude} key={item.nome}>
+              <FaMapMarkerAlt size={24}/>
+             
+            </Marker>
+          ))
+          }
+        </ReactMapGL>
+        <button onClick={() => this.add()}>ADD</button>
+      </Container >
     )
   }
 }

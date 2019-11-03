@@ -1,4 +1,4 @@
-const locations = [
+ const Locations = [
   {
     "codigo_ibge": 5200050,
     "lat": -16.7573,
@@ -27850,3 +27850,5 @@ const locations = [
     "lon": -51.552
   }
 ]
+
+export default Locations
